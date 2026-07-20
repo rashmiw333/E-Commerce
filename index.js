@@ -23,7 +23,7 @@ async function createProduct(newProduct) {
 //api
 app.post("/api/products", async (req, res) => {
   try {
-    await createProduct(req.body);
+    const savedProduct = await createProduct(req.body);
     res.status(201).json({
       message: "Product added successfully.",
     });
