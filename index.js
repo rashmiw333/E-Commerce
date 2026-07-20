@@ -9,44 +9,6 @@ app.use(cors());
 
 initializeDatabase();
 
-//1.read all products
-
-async function readAllProducts() {
-  try {
-    const products = await Product.find();
-    return products;
-  } catch (error) {
-    throw error;
-  }
-}
-
-// POST call to create receipe
-
-app.get("/api/products", async (req, res) => {
-  try {
-    const products = await readAllProducts();
-
-    if (products.length !== 0) {
-      res.json({data: {products}});
-    } else {
-      res.status(404).json({error: "Products not found."});
-    }
-  } catch (error) {
-    res.status(500).json({error: "Error occurred while fetching products."});
-  }
-});
-
-//2.method to get product by id
-
-async function getProductById(productId) {
-  try {
-    const product = await Product.findById(productId);
-    return product;
-  } catch (error) {
-    throw error;
-  }
-}
-
 //create
 async function createProduct(newProduct) {
   try {
@@ -71,6 +33,44 @@ app.post("/api/products", async (req, res) => {
     });
   }
 });
+
+//read all products
+
+async function readAllProducts() {
+  try {
+    const products = await Product.find();
+    return products;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// POST call to get all receipe
+
+app.get("/api/products", async (req, res) => {
+  try {
+    const products = await readAllProducts();
+
+    if (products.length !== 0) {
+      res.json({data: {products}});
+    } else {
+      res.status(404).json({error: "Products not found."});
+    }
+  } catch (error) {
+    res.status(500).json({error: "Error occurred while fetching products."});
+  }
+});
+
+//method to get product by id
+
+async function getProductById(productId) {
+  try {
+    const product = await Product.findById(productId);
+    return product;
+  } catch (error) {
+    throw error;
+  }
+}
 
 //get api for product by id
 
