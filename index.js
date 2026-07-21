@@ -3,13 +3,14 @@ const app = express();
 const cors = require("cors");
 const {initializeDatabase} = require("./db/db.connect");
 const Product = require("./models/product.model");
+const Category = require("./models/category.model");
 
 app.use(express.json());
 app.use(cors());
 
 initializeDatabase();
 
-//create
+//create product
 async function createProduct(newProduct) {
   try {
     const product = new Product(newProduct);
@@ -20,7 +21,7 @@ async function createProduct(newProduct) {
   }
 }
 
-//api
+//api to ctreate product
 app.post("/api/products", async (req, res) => {
   try {
     await createProduct(req.body);
@@ -88,6 +89,85 @@ app.get("/api/products/:productId", async (req, res) => {
   }
 });
 
+//catrgory methods and apis
+
+// Create Category
+async function createCategory(newCategory) {
+  try {
+    const category = new Category(newCategory);
+    const savedCategory = await category.save();
+    return savedCategory;
+  } catch (error) {
+    console.log("Failed to add Category", error);
+  }
+}
+
+// API
+app.post("/api/categories", async (req, res) => {
+  try {
+    const savedCategory = await createCategory(req.body);
+    res.status(201).json({message: "Category added successfully."});
+  } catch (error) {
+    res.status(500).json({error: "Failed to add Category."});
+  }
+});
+
+//read all categories
+
+// Read all Categories
+async function readAllCategories() {
+  try {
+    const categories = await Category.find();
+    return categories;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// API
+app.get("/api/categories", async (req, res) => {
+  try {
+    const categories = await readAllCategories();
+
+    if (categories.length !== 0) {
+        res.json({data: {categories}});
+    } else {
+      res.status(404).json({
+        error: "Categories not found.",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({error: "Error occurred while fetching categories."});
+  }
+});
+
+
+//category by id
+
+// Method to get Category by ID
+async function getCategoryById(categoryId) {
+  try {
+    const category = await Category.findById(categoryId);
+    return category;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// API
+app.get("/api/categories/:categoryId", async (req, res) => {
+  try {
+    const category = await getCategoryById(req.params.categoryId);
+
+    if (category) {
+      res.json({data: {category}});
+    } else {
+      res.status(404).json({error: "Category not found."});
+    }
+  } catch (error) {
+    res.status(500).json({error: "Error occurred while fetching category."});
+  }
+});
 
 const PORT= 3000;
 app.listen(PORT,()=>{
